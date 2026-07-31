@@ -1,0 +1,61 @@
+# Handles incoming dataset submissions:
+#  1. Acknowledges the submitter with a comment describing the review process.
+#  2. (Optional) Sends a direct email to the maintainer inbox — enable by adding
+#     the MAIL_* secrets below. Without them, rely on GitHub's built-in
+#     notifications: every maintainer who "Watch → Custom → Issues" the repo
+#     gets an email for each new submission automatically.
+name: Dataset submission review
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  acknowledge:
+    if: contains(github.event.issue.labels.*.name, 'dataset-submission')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Thank the submitter
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                "Thanks for the submission! Here is what happens next:",
+                "",
+                "1. A maintainer reviews the annotation against the coding manual (usually within two weeks).",
+                "2. We may ask follow-up questions in this thread — watch for replies.",
+                "3. Once accepted, the entry is added to the master CSV, `build_data.py` is re-run, and the dataset appears on the hub. This issue is then closed with a link to the entry.",
+              ].join("\n"),
+            });
+
+  notify-maintainers:
+    if: contains(github.event.issue.labels.*.name, 'dataset-submission')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Email maintainers
+        # Only runs when the SMTP secrets are configured (Settings → Secrets):
+        #   MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, MAIL_TO
+        if: ${{ vars.MAIL_ENABLED == 'true' }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          to: ${{ secrets.MAIL_TO }}
+          from: Cultural-NLP Hub <${{ secrets.MAIL_USERNAME }}>
+          subject: "[Hub submission] ${{ github.event.issue.title }}"
+          body: |
+            New dataset submission on the Cultural-NLP Dataset Hub:
+
+            ${{ github.event.issue.title }}
+            ${{ github.event.issue.html_url }}
+
+            Review it, then add the accepted entry to the master CSV and re-run build_data.py.

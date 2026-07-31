@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cultural-NLP Dataset Hub</title>
+<meta name="description" content="A living, filterable catalog of cultural-NLP datasets annotated with taxonomy branch and category, representational mode (C/CL/L), languages, regions, evaluated models, and evaluation-protocol flags.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%230E7C5B'/><text x='50' y='64' font-size='46' text-anchor='middle' fill='white' font-family='monospace'>C</text></svg>">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-title">
+      <h1>Cultural-NLP Dataset Hub</h1>
+      <p class="masthead-sub">A living catalog of cultural-NLP benchmarks, coded by taxonomy branch&nbsp;::&nbsp;category, representational mode, languages, regions, evaluated models, and evaluation-protocol flags.</p>
+    </div>
+    <div class="masthead-actions">
+      <a class="btn btn-primary" id="submit-link" href="#" target="_blank" rel="noopener">Add a dataset</a>
+      <a class="btn" id="paper-link" href="#" target="_blank" rel="noopener">Read the paper</a>
+    </div>
+  </div>
+  <div class="query-line" id="query-line" aria-live="polite"></div>
+</header>
+
+<div class="layout">
+
+  <aside class="facets" id="facets" aria-label="Filters">
+    <div class="facets-head">
+      <span>Filters</span>
+      <button class="link-btn" id="clear-all" hidden>Clear all</button>
+    </div>
+    <!-- facet groups are rendered here -->
+  </aside>
+
+  <main class="results">
+    <div class="toolbar">
+      <input type="search" id="search" placeholder="Search dataset or paper title&hellip;" aria-label="Search dataset or paper title">
+      <label class="sort-label">Sort
+        <select id="sort" aria-label="Sort results">
+          <option value="year-desc">Newest first</option>
+          <option value="year-asc">Oldest first</option>
+          <option value="citations">Most cited</option>
+          <option value="name">Name A&ndash;Z</option>
+        </select>
+      </label>
+      <button class="btn" id="export">Export CSV</button>
+    </div>
+    <ol class="rows" id="rows"></ol>
+    <p class="empty" id="empty" hidden>No datasets match this combination of filters. Remove a filter from the query line above, or <a href="#" id="empty-submit" target="_blank" rel="noopener">add the dataset you were looking for</a>.</p>
+  </main>
+
+</div>
+
+<footer class="footer">
+  <p><strong>Contribute.</strong> Found a cultural-NLP dataset we have not coded, or disagree with an annotation? Open a
+  <a id="footer-submit" href="#" target="_blank" rel="noopener">dataset submission</a> — it is a structured form mirroring the annotation schema.
+  Maintainers are notified by email, review each submission against the coding manual, and accepted entries appear here with the next data build.</p>
+  <p class="footer-fine">Mode legend: <span class="mode mode-C">C</span> culture-isolating (answer survives faithful translation) · <span class="mode mode-CL">CL</span> culture&ndash;language entangled · <span class="mode mode-L">L</span> linguistic form only. Flags (refusal / agentic / safety / robustness) are coded over the datasets whose papers run a model evaluation.</p>
+</footer>
+
+<script src="data/datasets.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

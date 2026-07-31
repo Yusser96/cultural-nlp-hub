@@ -1,0 +1,152 @@
+name: Submit a cultural-NLP dataset or annotation
+description: Propose a new dataset, or add your own annotation to a dataset already in the Cultural-NLP Dataset Hub. A maintainer reviews every submission before it is published.
+title: "[Dataset] "
+labels: ["dataset-submission", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing! Fill in what you can — **dataset name, paper link, languages, and your annotator name are required**; a maintainer will complete or correct the remaining annotation during review. Definitions for every field are in the [coding manual](../blob/main/README.md#annotation-schema). Every dataset keeps **all** accepted annotations side by side — yours is added next to the existing ones, never replacing them.
+
+  - type: dropdown
+    id: submission-type
+    attributes:
+      label: Submission type
+      options:
+        - New dataset (not in the hub yet)
+        - Additional annotation for a dataset already in the hub
+    validations:
+      required: true
+
+  - type: input
+    id: annotator
+    attributes:
+      label: Annotator name or alias
+      description: Shown publicly next to your annotation. Use your name or a stable alias. One annotation per alias per paper — if your alias already appears on this paper, ask in the issue to update that annotation instead of submitting a second one.
+    validations:
+      required: true
+
+  - type: input
+    id: dataset
+    attributes:
+      label: Dataset name
+      placeholder: e.g. BLEnD
+    validations:
+      required: true
+
+  - type: input
+    id: title
+    attributes:
+      label: Paper title
+    validations:
+      required: true
+
+  - type: input
+    id: paper-link
+    attributes:
+      label: Paper link
+      placeholder: https://aclanthology.org/...
+    validations:
+      required: true
+
+  - type: input
+    id: data-link
+    attributes:
+      label: Data link (repository, HuggingFace, download page)
+
+  - type: input
+    id: year
+    attributes:
+      label: Year of publication
+      placeholder: "2025"
+
+  - type: input
+    id: languages
+    attributes:
+      label: Languages
+      description: Comma-separated (e.g. English, Spanish, German).
+    validations:
+      required: true
+
+  - type: input
+    id: regions
+    attributes:
+      label: Cultural regions covered
+      description: Comma-separated (e.g. East Asia, Latin America, Global).
+
+  - type: dropdown
+    id: branch
+    attributes:
+      label: Taxonomy branch(es)
+      multiple: true
+      options:
+        - Ideational
+        - Linguistic
+        - Social
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Taxonomy category
+      options:
+        - Knowledge
+        - Concepts
+        - Values - general
+        - Values - bias
+        - Values - hate
+        - Values - other perceptions
+        - Norms and Morals
+        - Artifacts
+        - Demographics
+        - Relationship
+        - Communicative Goals
+        - Context
+        - Dialects
+        - Styles, Registers, Genres
+
+  - type: dropdown
+    id: rep-mode
+    attributes:
+      label: Representational mode
+      description: "Apply the translation test: does a faithful translation leave the gold answer unchanged (C), changed (CL), or undefined (L)?"
+      options:
+        - C — culture-isolating (answer survives translation)
+        - CL — culture–language entangled (answer altered by translation)
+        - L — linguistic form only (answer undefined under translation)
+        - Unsure — let a maintainer decide
+
+  - type: input
+    id: models
+    attributes:
+      label: Models evaluated in the paper (if any)
+      description: Semicolon-separated (e.g. GPT-4; Llama-3-8B-Instruct; mBERT).
+
+  - type: checkboxes
+    id: protocol-flags
+    attributes:
+      label: Evaluation-protocol dimensions the paper covers
+      options:
+        - label: Refusal (measures whether models decline when appropriate)
+        - label: Agentic (evaluates models in an agentic / tool-use setting)
+        - label: Safety (evaluates cultural safety / harm)
+        - label: Robustness (tests paraphrase / perturbation stability)
+
+  - type: textarea
+    id: example
+    attributes:
+      label: One representative example item
+      description: A single item from the dataset that shows what it measures.
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes for the reviewer
+      description: Anything that helped you decide the mode/category, or open questions.
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      options:
+        - label: This dataset is publicly documented (published paper or public repository), and I have checked it is not already in the hub.
+          required: true
