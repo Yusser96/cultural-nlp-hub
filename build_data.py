@@ -87,6 +87,11 @@ def split_list(value: str, sep: str) -> list[str]:
     return [part.strip() for part in str(value).split(sep) if part.strip()]
 
 
+def split_multi(value: str) -> list[str]:
+    """Split on comma OR semicolon — annotator-supplied lists mix both."""
+    return [part.strip() for part in re.split(r"[,;]", str(value)) if part.strip()]
+
+
 def clean_year(value: str) -> int | None:
     match = re.match(r"(\d{4})", str(value))
     return int(match.group(1)) if match else None
@@ -137,8 +142,12 @@ def load_validation_annotations() -> dict[str, list[dict]]:
             "mode": row["Rep_Mode"].strip(),
             "pairs": split_list(row["Branch_Categories"], ";"),
             "flags": {k: clean_flag(row[k.capitalize()]) for k in FLAG_KEYS},
+            "languages": split_multi(row["Languages"]),
+            "regions": split_multi(row["Regions"]),
+            "models": split_list(row["Models"], ";"),
         }
-        if ann["mode"] or ann["pairs"] or any(ann["flags"].values()):
+        if (ann["mode"] or ann["pairs"] or any(ann["flags"].values())
+                or ann["languages"] or ann["regions"] or ann["models"]):
             by_title.setdefault(title, []).append(ann)
 
     # One annotation per annotator name/alias per paper: keep the last
@@ -185,17 +194,24 @@ def main() -> None:
     for i, row in df.iterrows():
         branches = split_list(row["branch_set"], "|")
         categories = parse_categories(row["Category"])
+        # Baseline languages/regions/models stay empty here — the site falls
+        # back to the record-level values for the "curated" row, so the big
+        # lists are not duplicated in the payload.
         baseline = {
             "who": "curated",
             "mode": MODE_LABELS.get(row["representational_mode"].strip(), ""),
             "pairs": baseline_pairs(branches, categories),
             "flags": {k: clean_flag(row[k]) for k in FLAG_KEYS},
+            "languages": [], "regions": [], "models": [],
         }
         extra = validation.get(norm_title(row["Title"]), [])
         matched += bool(extra)
         annotations = [baseline] + extra
 
         # Facet unions across every annotation of the record.
+        languages = split_list(row["Languages"], ",")
+        regions = split_list(row["Geographical diversity (culture)"], ",")
+        models = split_list(row["models_normalized"], ";")
         for ann in extra:
             for pair in ann["pairs"]:
                 branch, _, category = (part.strip() for part in pair.partition("::"))
@@ -203,6 +219,14 @@ def main() -> None:
                     branches.append(branch)
                 if category and category not in categories:
                     categories.append(category)
+            for target, values in ((languages, ann["languages"]),
+                                   (regions, ann["regions"]),
+                                   (models, ann["models"])):
+                seen = {t.casefold() for t in target}
+                for v in values:
+                    if v.casefold() not in seen:
+                        seen.add(v.casefold())
+                        target.append(v)
         modes = sorted({a["mode"] for a in annotations if a["mode"]})
 
         agg = aggregate(annotations)
@@ -218,12 +242,12 @@ def main() -> None:
             "categories": categories,
             "modes": modes,
             "mode": baseline["mode"] or (modes[0] if modes else ""),
-            "languages": split_list(row["Languages"], ","),
-            "regions": split_list(row["Geographical diversity (culture)"], ","),
+            "languages": languages,
+            "regions": regions,
             "task": row["Task type"].strip(),
             "format": row["Format"].strip(),
             "families": split_list(row["fam_list"], ";"),
-            "models": split_list(row["models_normalized"], ";"),
+            "models": models,
             "llm_eval": row["is_llm_eval_paper"].strip() == "Yes",
             "hf": row["in_huggingface"].strip().upper() == "YES",
             "citations": int(row["# citation"]) if str(row["# citation"]).strip().isdigit() else None,

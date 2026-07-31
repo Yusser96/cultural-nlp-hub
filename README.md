@@ -66,7 +66,9 @@ of existing ones, through two separate forms:
   annotation on it.
 - Both forms take branch :: category as a **multi-select of exact pairs** (42
   options), the translation test for the representational mode, and the four
-  protocol flags.
+  protocol flags. The annotation form additionally accepts optional
+  **languages, regions, and evaluated-models** corrections; per-annotation
+  values are unioned into the dataset's filterable metadata.
 - **Notification.** Every submission is labeled `dataset-submission` +
   `needs-review`. Maintainers get an email through GitHub's built-in
   notifications: on the repo page choose **Watch → Custom → Issues** (each

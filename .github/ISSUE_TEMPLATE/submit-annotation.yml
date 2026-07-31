@@ -155,6 +155,24 @@ body:
         - label: Safety (evaluates cultural safety / harm)
         - label: Robustness (tests paraphrase / perturbation stability)
 
+  - type: input
+    id: languages
+    attributes:
+      label: Languages
+      description: Comma-separated (e.g. English, Spanish, German). Fill in if you want to confirm or correct the languages listed for this dataset; leave empty to skip.
+
+  - type: input
+    id: regions
+    attributes:
+      label: Cultural regions covered
+      description: Comma-separated (e.g. East Asia, Latin America, Global). Fill in to confirm or correct; leave empty to skip.
+
+  - type: input
+    id: models
+    attributes:
+      label: Models evaluated in the paper
+      description: Semicolon-separated (e.g. GPT-4; Llama-3-8B-Instruct; mBERT). Fill in to confirm or correct the model list; leave empty to skip.
+
   - type: textarea
     id: notes
     attributes:

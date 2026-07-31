@@ -340,19 +340,31 @@ function rowHTML(r) {
       <div style="grid-column:1/-1">
         <dt>Annotations (${r.annotations.length}) —
           <a class="row-annotate" href="${esc(annotateURL(r))}">add yours ↗</a></dt>
-        <dd><table class="ann-table">
+        <dd class="ann-scroll"><table class="ann-table">
           <tr><th>Annotator</th>
             <th>Mode ${infoIcon(FACET_HELP.mode)}</th>
             <th>Branch :: category ${infoIcon(FACET_HELP.branches + " " + FACET_HELP.categories)}</th>
             <th>Flags ${infoIcon("Which evaluation-protocol dimensions the paper covers. " +
-              FLAG_KEYS.map(k => k + ": " + FACET_HELP[k]).join(" "))}</th></tr>
-          ${r.annotations.map(a => `<tr>
+              FLAG_KEYS.map(k => k + ": " + FACET_HELP[k]).join(" "))}</th>
+            <th>Languages ${infoIcon(FACET_HELP.languages)}</th>
+            <th>Regions ${infoIcon(FACET_HELP.regions)}</th>
+            <th>Models ${infoIcon("Models the annotator confirmed as evaluated in the source paper.")}</th></tr>
+          ${r.annotations.map(a => {
+            // The curated baseline shows the record-level lists (not
+            // duplicated in the payload).
+            const langs = a.who === "curated" && !a.languages.length ? r.languages : a.languages;
+            const regs = a.who === "curated" && !a.regions.length ? r.regions : a.regions;
+            const models = a.who === "curated" && !a.models.length ? r.models : a.models;
+            return `<tr>
             <td>${esc(a.who)}</td>
             <td>${a.mode ? `<span class="mode mode-${esc(a.mode)}">${esc(a.mode)}</span>` : "—"}</td>
             <td>${a.pairs.length ? esc(a.pairs.join("; ")) : "—"}</td>
             <td>${FLAG_KEYS.filter(k => a.flags[k] === "Yes").map(esc).join(", ") ||
                  (FLAG_KEYS.some(k => a.flags[k]) ? "none" : "—")}</td>
-          </tr>`).join("")}
+            <td>${langs.length ? esc(truncateList(langs, 6)) : "—"}</td>
+            <td>${regs.length ? esc(truncateList(regs, 4)) : "—"}</td>
+            <td>${models.length ? esc(truncateList(models, 5)) : "—"}</td>
+          </tr>`;}).join("")}
         </table></dd>
       </div>
     </dl>
@@ -361,6 +373,11 @@ function rowHTML(r) {
 
 function dd(label, value) {
   return value ? `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>` : "";
+}
+
+function truncateList(values, n) {
+  return values.slice(0, n).join(", ") +
+    (values.length > n ? ` +${values.length - n} more` : "");
 }
 
 /* ------------------------------------------------------------------ export */

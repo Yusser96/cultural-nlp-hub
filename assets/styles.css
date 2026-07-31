@@ -323,11 +323,14 @@ a { color: var(--accent); }
 .row-detail .links a { margin-right: 0.9rem; }
 .row-detail .example { font-style: italic; color: var(--muted); }
 
+.ann-scroll { overflow-x: auto; }
 .ann-table {
   border-collapse: collapse;
   width: 100%;
+  min-width: 640px;
   font-size: 0.82rem;
 }
+.ann-table td { max-width: 16rem; }
 .ann-table th {
   text-align: left;
   font: 600 0.68rem/1.6 var(--mono);
