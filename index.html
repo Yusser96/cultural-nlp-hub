@@ -56,6 +56,39 @@
 
 </div>
 
+<section class="protocol" id="protocol">
+  <details>
+    <summary><h2>Annotation protocol</h2><span class="protocol-hint">how this catalog is coded and maintained</span></summary>
+    <div class="protocol-body">
+      <p><strong>1 · The coding schema.</strong> Every dataset is coded on the schema of the accompanying meta-analysis: taxonomy
+      <em>branch&nbsp;::&nbsp;category</em> pairs (Ideational / Linguistic / Social × 14 cultural elements, after Liu et&nbsp;al.), the
+      <em>representational mode</em> assigned with the translation-invariance test — if the item were faithfully translated into another
+      language, the gold answer <em>holds</em> (C, culture-isolating), <em>changes</em> (CL, culture–language entangled), or becomes
+      <em>void</em> (L, linguistic form only) — and the four <em>evaluation-protocol flags</em>: refusal, agentic, safety, robustness.
+      Hover the <span class="info-inline">i</span> icons next to any filter, or any mode/branch/category option, for the exact coding
+      criterion of that field.</p>
+
+      <p><strong>2 · Annotations are never collapsed.</strong> A dataset carries <em>every</em> accepted annotation side by side: the
+      curated baseline from the released coding, the study's validation annotators (A1, A2, A3, and Claude), and community
+      contributions. Filters match a dataset if <em>any</em> of its annotations matches, and displayed values carry annotator counts —
+      e.g. <code>Ideational&nbsp;::&nbsp;Knowledge&nbsp;(3)</code> means three annotators assigned that pair. Inter-annotator
+      disagreement stays visible in the interface rather than being adjudicated away; expand any row to compare annotations.</p>
+
+      <p><strong>3 · Contributing.</strong> Two paths, both public GitHub issue forms mirroring the schema:
+      <em>Add a new dataset</em> (top right) is for datasets not yet listed — an automatic check compares your submission against the
+      catalog by dataset name, paper title, and paper link, and redirects likely duplicates to the annotation flow.
+      <em>+&nbsp;annotate</em>, next to every dataset, adds your own independent annotation of that dataset, prefilled with its name and
+      title. Each annotation is published under your chosen name or alias, with one annotation per alias per dataset — the automatic
+      check verifies your alias is still free; to revise your earlier annotation, comment on your original submission instead.</p>
+
+      <p><strong>4 · Review and publication.</strong> Every submission notifies the maintainers by e-mail and is reviewed against the
+      coding manual (usually within two weeks); reviewers may ask follow-up questions in the issue thread. Accepted entries are added
+      to the released data, the catalog is rebuilt, and the issue is closed with a link to the entry. Declined submissions receive a
+      reason. The full dataset — including all annotations — can be exported as CSV from any filtered view above.</p>
+    </div>
+  </details>
+</section>
+
 <footer class="footer">
   <p><strong>Contribute.</strong> Found a cultural-NLP dataset we have not coded? Open a
   <a id="footer-submit" href="#" target="_blank" rel="noopener">new-dataset submission</a> — an automatic check verifies it is not already listed.

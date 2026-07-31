@@ -353,6 +353,44 @@ a { color: var(--accent); }
   color: var(--muted);
 }
 
+/* ---------------------------------------------------------------- protocol */
+
+.protocol {
+  border-top: 2px solid var(--ink);
+  background: var(--card);
+  margin-top: 2rem;
+  padding: 0 1.5rem;
+}
+.protocol details { max-width: 1200px; margin: 0 auto; }
+.protocol summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  padding: 1.1rem 0;
+}
+.protocol summary::-webkit-details-marker { display: none; }
+.protocol summary::after { content: "+"; color: var(--muted); font-family: var(--mono); margin-left: auto; }
+.protocol details[open] summary::after { content: "–"; }
+.protocol h2 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin: 0;
+}
+.protocol-hint { font: 400 0.8rem/1.4 var(--mono); color: var(--muted); }
+.protocol-body { padding-bottom: 1.3rem; max-width: 56rem; }
+.protocol-body p { margin: 0 0 0.85rem; }
+.protocol-body code { font: 400 0.82em var(--mono); background: var(--paper); border: 1px solid var(--rule); border-radius: 2px; padding: 0 0.25rem; }
+.info-inline {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 0.95rem; height: 0.95rem;
+  border: 1px solid var(--muted); border-radius: 50%;
+  font: italic 600 0.62rem/1 Georgia, serif; color: var(--muted);
+  vertical-align: 0.1rem;
+}
+
 /* ------------------------------------------------------------------ footer */
 
 .footer {
