@@ -435,6 +435,39 @@ function readHash() {
   }
 }
 
+/* --------------------------------------------------------- acknowledgments */
+
+// Roles for the core annotators; community aliases get a generic line.
+const ANNOTATOR_ROLES = {
+  curated: "released baseline coding (study authors)",
+  A1: "validation annotator — template author, full first validation pass",
+  A2: "validation annotator",
+  A3: "validation annotator",
+  Claude: "LLM annotator (semi-automatic pass over the source PDFs, with rationales)",
+};
+
+function renderAcknowledgments() {
+  const counts = new Map();
+  for (const r of window.DATASETS) {
+    for (const a of r.annotations) {
+      counts.set(a.who, (counts.get(a.who) || 0) + 1);
+    }
+  }
+  const rows = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  const total = rows.reduce((s, [, n]) => s + n, 0);
+
+  $("#ack-body").innerHTML = `
+    <table class="ack-table">
+      <tr><th>Annotator</th><th>Role</th><th class="num">Datasets annotated</th></tr>
+      ${rows.map(([who, n]) => `<tr>
+        <td class="ack-who">${esc(who)}</td>
+        <td>${esc(ANNOTATOR_ROLES[who] || "community annotator")}</td>
+        <td class="num">${n}</td>
+      </tr>`).join("")}
+      <tr class="ack-total"><td>Total</td><td>${rows.length} annotators</td><td class="num">${total}</td></tr>
+    </table>`;
+}
+
 /* ------------------------------------------------------------------ render */
 
 function render() {
@@ -490,6 +523,16 @@ function init() {
     state.selected.forEach(s => s.clear());
     state.facetSearch.clear();
     render();
+  });
+
+  const ackDialog = $("#ack-dialog");
+  $("#ack-open").addEventListener("click", () => {
+    renderAcknowledgments();
+    ackDialog.showModal();
+  });
+  $("#ack-close").addEventListener("click", () => ackDialog.close());
+  ackDialog.addEventListener("click", e => {
+    if (e.target === ackDialog) ackDialog.close();
   });
 
   initTooltip();

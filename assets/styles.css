@@ -394,6 +394,57 @@ a { color: var(--accent); }
   vertical-align: 0.1rem;
 }
 
+/* --------------------------------------------------------- acknowledgments */
+
+.ack-dialog {
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  background: var(--card);
+  color: var(--ink);
+  padding: 1.4rem 1.6rem;
+  width: min(600px, 92vw);
+  max-height: 85vh;
+}
+.ack-dialog::backdrop { background: rgba(20, 35, 45, 0.45); }
+.ack-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+.ack-head h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 0;
+}
+.ack-intro, .ack-join { color: var(--muted); font-size: 0.9rem; }
+.ack-join { margin-bottom: 0; }
+.ack-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.8rem 0;
+  font-size: 0.88rem;
+}
+.ack-table th {
+  text-align: left;
+  font: 600 0.7rem/1.6 var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  border-bottom: 2px solid var(--ink);
+  padding: 0.25rem 0.8rem 0.25rem 0;
+}
+.ack-table td {
+  border-bottom: 1px solid var(--rule);
+  padding: 0.4rem 0.8rem 0.4rem 0;
+  vertical-align: top;
+}
+.ack-table .num { text-align: right; font-family: var(--mono); padding-right: 0; }
+.ack-who { font-weight: 600; }
+.ack-total td { border-bottom: none; border-top: 2px solid var(--ink); font-weight: 600; }
+
 /* ------------------------------------------------------------------ footer */
 
 .footer {

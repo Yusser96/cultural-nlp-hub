@@ -22,6 +22,7 @@
     <div class="masthead-actions">
       <a class="btn btn-primary" id="submit-link" href="#" target="_blank" rel="noopener" title="Submit a dataset that is not in the hub yet — to annotate an existing one, use the + annotate link next to it">Add a new dataset</a>
       <a class="btn" id="paper-link" href="#" target="_blank" rel="noopener">Read the paper</a>
+      <button class="btn" id="ack-open" type="button">Acknowledgments</button>
     </div>
   </div>
   <div class="query-line" id="query-line" aria-live="polite"></div>
@@ -98,6 +99,18 @@
   Maintainers are notified by email, review each submission against the coding manual, and accepted entries appear here with the next data build.</p>
   <p class="footer-fine">Mode legend: <span class="mode mode-C">C</span> culture-isolating (answer survives faithful translation) · <span class="mode mode-CL">CL</span> culture&ndash;language entangled · <span class="mode mode-L">L</span> linguistic form only. Flags (refusal / agentic / safety / robustness) are coded over the datasets whose papers run a model evaluation.</p>
 </footer>
+
+<dialog class="ack-dialog" id="ack-dialog" aria-labelledby="ack-title">
+  <div class="ack-head">
+    <h2 id="ack-title">Acknowledgments</h2>
+    <button class="btn" id="ack-close" type="button" autofocus>Close</button>
+  </div>
+  <p class="ack-intro">This catalog exists because people read papers and coded them, one dataset at a time.
+  Every annotator below — named or under an alias — shaped the coding you can filter on this page.
+  Counts update automatically with every accepted annotation.</p>
+  <div id="ack-body"><!-- contributor table rendered by app.js --></div>
+  <p class="ack-join">Want to appear here? Pick any dataset above and click <em>+&nbsp;annotate</em> — your name or alias joins this list with your first accepted annotation.</p>
+</dialog>
 
 <script src="data/datasets.js"></script>
 <script src="assets/app.js"></script>
