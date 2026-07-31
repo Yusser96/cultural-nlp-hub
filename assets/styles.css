@@ -300,7 +300,9 @@ a { color: var(--accent); }
 }
 .tag.flag-yes { border-color: var(--accent); color: var(--accent); }
 
-.row-open-hint { font: 400 0.75rem/1.6 var(--mono); color: var(--muted); justify-self: end; }
+.row-open-hint { font: 400 0.75rem/1.6 var(--mono); color: var(--muted); justify-self: end; white-space: nowrap; }
+.row-annotate { color: var(--accent); text-decoration: none; }
+.row-annotate:hover { text-decoration: underline; }
 
 .row-detail {
   border-top: 1px dashed var(--rule);

@@ -1,9 +1,12 @@
-# Handles incoming dataset submissions:
-#  1. Acknowledges the submitter with a comment describing the review process.
-#  2. (Optional) Sends a direct email to the maintainer inbox — enable by adding
-#     the MAIL_* secrets below. Without them, rely on GitHub's built-in
-#     notifications: every maintainer who "Watch → Custom → Issues" the repo
-#     gets an email for each new submission automatically.
+# Handles incoming submissions (new datasets and additional annotations):
+#  1. Runs the automatic verification (.github/scripts/check_submission.py):
+#     - new dataset  -> duplicate check by name / paper title / paper link
+#     - annotation   -> dataset must exist, alias must be free on it
+#     and posts the result as a comment.
+#  2. (Optional) Sends a direct email to the maintainer inbox — enable by
+#     setting the MAIL_* secrets and the MAIL_ENABLED=true repo variable.
+#     Without them, rely on GitHub's built-in notifications: maintainers who
+#     "Watch → Custom → Issues" the repo get an email for each submission.
 name: Dataset submission review
 
 on:
@@ -12,36 +15,48 @@ on:
 
 permissions:
   issues: write
+  contents: read
 
 jobs:
-  acknowledge:
-    if: contains(github.event.issue.labels.*.name, 'dataset-submission')
+  verify:
+    if: >
+      contains(github.event.issue.labels.*.name, 'dataset-submission') ||
+      contains(github.event.issue.labels.*.name, 'annotation-submission')
     runs-on: ubuntu-latest
     steps:
-      - name: Thank the submitter
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: [
-                "Thanks for the submission! Here is what happens next:",
-                "",
-                "1. A maintainer reviews the annotation against the coding manual (usually within two weeks).",
-                "2. We may ask follow-up questions in this thread — watch for replies.",
-                "3. Once accepted, the entry is added to the master CSV, `build_data.py` is re-run, and the dataset appears on the hub. This issue is then closed with a link to the entry.",
-              ].join("\n"),
-            });
+      - uses: actions/checkout@v4
+
+      - name: Run automatic checks
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          CHECK_MODE: ${{ contains(github.event.issue.labels.*.name, 'annotation-submission') && 'annotation' || 'dataset' }}
+        run: python3 .github/scripts/check_submission.py > check_result.md
+
+      - name: Post check result and review steps
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            cat check_result.md
+            echo ""
+            echo "---"
+            echo "*What happens next: a maintainer reviews this against the coding manual"
+            echo "(usually within two weeks) and may ask follow-up questions here. Accepted"
+            echo "entries appear on the hub with the next data build, and this issue is"
+            echo "closed with a link.*"
+          } > comment.md
+          gh issue comment "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --body-file comment.md
 
   notify-maintainers:
-    if: contains(github.event.issue.labels.*.name, 'dataset-submission')
+    if: >
+      contains(github.event.issue.labels.*.name, 'dataset-submission') ||
+      contains(github.event.issue.labels.*.name, 'annotation-submission')
     runs-on: ubuntu-latest
     steps:
       - name: Email maintainers
-        # Only runs when the SMTP secrets are configured (Settings → Secrets):
-        #   MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, MAIL_TO
+        # Only runs when configured (Settings → Secrets and variables):
+        #   variable MAIL_ENABLED=true; secrets MAIL_SERVER, MAIL_PORT,
+        #   MAIL_USERNAME, MAIL_PASSWORD, MAIL_TO
         if: ${{ vars.MAIL_ENABLED == 'true' }}
         uses: dawidd6/action-send-mail@v3
         with:
@@ -53,9 +68,9 @@ jobs:
           from: Cultural-NLP Hub <${{ secrets.MAIL_USERNAME }}>
           subject: "[Hub submission] ${{ github.event.issue.title }}"
           body: |
-            New dataset submission on the Cultural-NLP Dataset Hub:
+            New submission on the Cultural-NLP Dataset Hub:
 
             ${{ github.event.issue.title }}
             ${{ github.event.issue.html_url }}
 
-            Review it, then add the accepted entry to the master CSV and re-run build_data.py.
+            The automatic check result is posted as a comment on the issue.

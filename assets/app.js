@@ -11,6 +11,16 @@ const REPO = "Yusser96/cultural-nlp-hub";
 const SUBMIT_URL = `https://github.com/${REPO}/issues/new?template=submit-dataset.yml`;
 const PAPER_URL = `https://github.com/${REPO}#paper`;
 
+// Annotation form for one existing dataset, prefilled via issue-form
+// query parameters (keyed by the form fields' ids).
+function annotateURL(r) {
+  const name = r.dataset || r.title;
+  return `https://github.com/${REPO}/issues/new?template=submit-annotation.yml` +
+    `&title=${encodeURIComponent("[Annotation] " + name)}` +
+    `&dataset=${encodeURIComponent(name)}` +
+    `&paper-title=${encodeURIComponent(r.title)}`;
+}
+
 /* ------------------------------------------------------------------ facets */
 
 const FLAG_KEYS = ["refusal", "agentic", "safety", "robustness"];
@@ -247,7 +257,8 @@ function rowHTML(r) {
     <summary>
       <span class="mode mode-${mode}">${mode === "none" ? "—" : esc(r.mode)}</span>
       <span class="row-name">${esc(r.dataset || r.title)}<span class="row-year">${r.year || ""}</span></span>
-      <span class="row-open-hint">details</span>
+      <span class="row-open-hint"><a class="row-annotate" href="${esc(annotateURL(r))}"
+        title="Add your own annotation of this dataset">+ annotate</a> · details</span>
       <span class="row-title">${esc(r.title)}</span>
       <span class="row-tags">${tags}</span>
     </summary>
@@ -266,7 +277,8 @@ function rowHTML(r) {
       ${r.mode_notes ? dd("Mode rationale", r.mode_notes) : ""}
       ${r.example ? `<div style="grid-column:1/-1"><dt>Example</dt><dd class="example">${esc(r.example)}</dd></div>` : ""}
       <div style="grid-column:1/-1">
-        <dt>Annotations (${r.annotations.length})</dt>
+        <dt>Annotations (${r.annotations.length}) —
+          <a class="row-annotate" href="${esc(annotateURL(r))}">add yours ↗</a></dt>
         <dd><table class="ann-table">
           <tr><th>Annotator</th><th>Mode</th><th>Branch :: category</th><th>Flags</th></tr>
           ${r.annotations.map(a => `<tr>
@@ -370,6 +382,16 @@ function init() {
   });
   $("#export").addEventListener("click", () => exportCSV(filtered(null).sort(SORTS[state.sort])));
   window.addEventListener("hashchange", () => { readHash(); render(); });
+
+  // "+ annotate" links sit inside <summary>; open them without toggling the row.
+  $("#rows").addEventListener("click", e => {
+    const link = e.target.closest(".row-annotate");
+    if (link) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.open(link.href, "_blank", "noopener");
+    }
+  });
   $("#clear-all").addEventListener("click", () => {
     state.search = "";
     $("#search").value = "";

@@ -52,13 +52,21 @@ check that a new submission's alias is not already taken on that paper.
 ## Community submissions
 
 The hub is also the intake point for new datasets *and* additional annotations
-of existing ones:
+of existing ones, through two separate forms:
 
-- **Submitters** click "Add a dataset", which opens a structured GitHub issue
-  form (`.github/ISSUE_TEMPLATE/submit-dataset.yml`) mirroring the annotation
-  schema — including the submission type (new dataset vs. additional
-  annotation), the annotator name/alias, the translation test for the
-  representational mode, and the four protocol flags.
+- **New datasets**: the "Add a new dataset" button opens
+  `.github/ISSUE_TEMPLATE/submit-dataset.yml`. On submission, a workflow runs
+  an automatic duplicate check (`.github/scripts/check_submission.py`) against
+  the catalog by dataset name, paper title, and paper link, and comments the
+  result — pointing genuine duplicates to the annotation flow instead.
+- **Additional annotations**: every dataset row on the site carries a
+  "+ annotate" link that opens `.github/ISSUE_TEMPLATE/submit-annotation.yml`
+  prefilled with that dataset's name and title. The same workflow verifies the
+  dataset exists and that the submitter's alias does not already have an
+  annotation on it.
+- Both forms take branch :: category as a **multi-select of exact pairs** (42
+  options), the translation test for the representational mode, and the four
+  protocol flags.
 - **Notification.** Every submission is labeled `dataset-submission` +
   `needs-review`. Maintainers get an email through GitHub's built-in
   notifications: on the repo page choose **Watch → Custom → Issues** (each

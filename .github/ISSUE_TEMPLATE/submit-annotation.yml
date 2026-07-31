@@ -1,12 +1,12 @@
-name: Submit a NEW cultural-NLP dataset
-description: Propose a dataset that is not in the hub yet. To add your annotation to an existing dataset, use the "+ annotate" link next to it on the hub instead.
-title: "[New dataset] "
-labels: ["dataset-submission", "needs-review"]
+name: Add an annotation to an existing dataset
+description: Add your own independent annotation to a dataset already in the hub. Easiest entry point — the "+ annotate" link next to the dataset, which prefills this form.
+title: "[Annotation] "
+labels: ["annotation-submission", "needs-review"]
 body:
   - type: markdown
     attributes:
       value: |
-        **This form is for datasets not yet in the hub.** Please [search the hub](https://yusser96.github.io/cultural-nlp-hub/) first — if the dataset is already there, use the **+ annotate** link next to it instead. An automatic check compares your submission against the catalog by name, title, and link, and a maintainer reviews every submission before it is published. Field definitions are in the [coding manual](../blob/main/README.md#annotation-schema).
+        Your annotation is added **next to** the existing ones — it never replaces them. One annotation per name/alias per dataset: if your alias already appears on this dataset, comment on your original submission to update it instead. An automatic check verifies the dataset exists and your alias is free; a maintainer then reviews the annotation before it is published.
 
   - type: input
     id: annotator
@@ -19,50 +19,14 @@ body:
   - type: input
     id: dataset
     attributes:
-      label: Dataset name
-      placeholder: e.g. BLEnD
+      label: Dataset name (as shown in the hub)
     validations:
       required: true
 
   - type: input
-    id: title
+    id: paper-title
     attributes:
-      label: Paper title
-    validations:
-      required: true
-
-  - type: input
-    id: paper-link
-    attributes:
-      label: Paper link
-      placeholder: https://aclanthology.org/...
-    validations:
-      required: true
-
-  - type: input
-    id: data-link
-    attributes:
-      label: Data link (repository, HuggingFace, download page)
-
-  - type: input
-    id: year
-    attributes:
-      label: Year of publication
-      placeholder: "2026"
-
-  - type: input
-    id: languages
-    attributes:
-      label: Languages
-      description: Comma-separated (e.g. English, Spanish, German).
-    validations:
-      required: true
-
-  - type: input
-    id: regions
-    attributes:
-      label: Cultural regions covered
-      description: Comma-separated (e.g. East Asia, Latin America, Global).
+      label: Paper title (as shown in the hub)
 
   - type: dropdown
     id: branch-categories
@@ -125,12 +89,6 @@ body:
         - L — linguistic form only (answer undefined under translation)
         - Unsure — let a maintainer decide
 
-  - type: input
-    id: models
-    attributes:
-      label: Models evaluated in the paper (if any)
-      description: Semicolon-separated (e.g. GPT-4; Llama-3-8B-Instruct; mBERT).
-
   - type: checkboxes
     id: protocol-flags
     attributes:
@@ -142,21 +100,7 @@ body:
         - label: Robustness (tests paraphrase / perturbation stability)
 
   - type: textarea
-    id: example
-    attributes:
-      label: One representative example item
-      description: A single item from the dataset that shows what it measures.
-
-  - type: textarea
     id: notes
     attributes:
       label: Notes for the reviewer
-      description: Anything that helped you decide the mode/categories, or open questions.
-
-  - type: checkboxes
-    id: confirm
-    attributes:
-      label: Confirmation
-      options:
-        - label: This dataset is publicly documented (published paper or public repository), and I searched the hub to confirm it is not already listed.
-          required: true
+      description: Your reasoning, especially where you disagree with existing annotations.
