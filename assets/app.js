@@ -50,6 +50,60 @@ const FACETS = [
 
 const MODE_LABELS = { C: "C — culture-isolating", CL: "CL — entangled", L: "L — linguistic form", uncoded: "uncoded" };
 
+/* ---------------------------------------------------- annotation guidance
+   Condensed from the coding manual (the validation template's Instructions
+   sheet). Facet-level: how to annotate the field. Option-level: what each
+   value means. Shown as hover/focus tooltips. */
+
+const FACET_HELP = {
+  mode: "The translation-invariance test: if the item were faithfully translated into another language, what happens to the gold answer? It still holds → C. It changes → CL. It becomes void → L. Tie-breaker: would a person from the culture answering in English still get it right? Then C; if the language itself carries the cultural signal, CL.",
+  branches: "Top level of the cultural-element taxonomy (Liu et al.). Ideational = mental culture (ideas, beliefs, values, knowledge). Linguistic = language-form phenomena. Social = interaction between people. Annotators pick the dominant branch; a dataset can carry several across its annotations.",
+  categories: "Fine-grained cultural element (Liu et al.), chosen under the branch. Hover any category below for its definition and examples.",
+  languages: "Languages the dataset covers, as listed in the source paper (reference metadata carried from the release, not re-annotated per annotator).",
+  regions: "Cultural regions the dataset targets, following the paper's own framing (e.g. East Asia, Arabic-speaking countries, Global).",
+  families: "Model families actually evaluated in the source paper, normalized from the paper's model list (e.g. LLaMA covers Llama-2/3 variants).",
+  task: "The dataset's NLP task type as coded in the release (QA, classification, structured prediction, …).",
+  refusal: "Answer “Yes” if the paper's evaluation protocol treats abstention / “I don't know” / refusal-to-answer as a valid or measured outcome (credits appropriate refusal, reports abstention rate). “No” if only accuracy on a forced answer counts.",
+  agentic: "Answer “Yes” if the model is evaluated in an agentic / interactive / multi-step / tool-using / dialogue setting. “No” for single-turn QA, classification, multiple-choice, or one-shot generation.",
+  safety: "Answer “Yes” if the benchmark measures a safety / harm / toxicity dimension — whether the model produces or detects culturally-situated harm. “No” if only correctness/accuracy is measured.",
+  robustness: "Answer “Yes” if the evaluation tests stability under perturbation — paraphrase, back-translation, option-order shuffling, prompt-template variation. “No” if the score comes from a single fixed prompt/format.",
+  year: "Publication year of the dataset paper.",
+};
+
+const OPTION_HELP = {
+  mode: {
+    C: "Cultural, language-independent: the answer still HOLDS unchanged after faithful translation. Tests culture-specific knowledge, values, or norms that do not depend on the language. e.g. “Which dish is eaten at this festival?”, value surveys.",
+    CL: "Culture + language entangled: the answer CHANGES — culture and language co-vary and cannot be separated. e.g. politeness registers, honorifics, culturally-loaded idioms whose correct answer depends on the language.",
+    L: "Linguistic form only: the answer is VOID / meaningless after translation. Tests language, dialect, script, or style — not culture. e.g. dialect identification, genre/style classification, code-mixing detection.",
+    uncoded: "No representational mode assigned by any annotator yet.",
+  },
+  branches: {
+    Ideational: "Ideas, beliefs, values, knowledge, concepts, norms — mental culture.",
+    Linguistic: "Language-form phenomena — dialect, script, style, register, code-mixing.",
+    Social: "Interaction, relationships, roles, institutions, etiquette enacted between people.",
+  },
+  categories: {
+    "Knowledge": "Ideational — facts / commonsense acquired by education or experience. e.g. “hurricane” vs “typhoon” QA, culture-MMLU.",
+    "Concepts": "Ideational — culture-specific entities / units of meaning. e.g. Diwali, Nowruz, schnitzel in QA or captioning.",
+    "Norms and Morals": "Ideational — rules governing behaviour and moral reasoning. e.g. situational moral inference, norm banks.",
+    "Artifacts": "Ideational — products of culture: art, poetry, literature, song. e.g. poetry MT, folk-tale emotion arcs.",
+    "Values - general": "Ideational — beliefs / desirable end-states guiding evaluation. e.g. WVS / Hofstede value alignment.",
+    "Values - bias": "Ideational — culture-varying stereotypes / bias toward groups. e.g. caste bias, beauty-stereotype benchmarks.",
+    "Values - hate": "Ideational — culture-varying perception of hatefulness. e.g. multicultural hate-speech / offensive detection.",
+    "Values - other perceptions": "Ideational — culture-varying politeness / aesthetics / emotion / humor / irony. e.g. cross-cultural humor.",
+    "Dialects": "Linguistic — regional / social variants of a language. e.g. AAVE, Tunisian Arabic dialect ID or MT.",
+    "Styles, Registers, Genres": "Linguistic — formality and situational / communicative variation. e.g. formality classification, style transfer.",
+    "Context": "Social — situational / historical / non-verbal “containers” of communication. e.g. pragmatic inference.",
+    "Communicative Goals": "Social — the intention behind language use. e.g. requests, apologies, persuasion, indirect refusal.",
+    "Relationship": "Social — connection / social roles between people. e.g. honorific selection by elder-vs-younger relation.",
+    "Demographics": "Social — speaker attributes: age, gender, location, education, income, politics. e.g. annotator-demographic-aware modeling.",
+  },
+};
+
+function infoIcon(tip) {
+  return `<span class="info" tabindex="0" role="note" aria-label="${esc(tip)}" data-tip="${esc(tip)}">i</span>`;
+}
+
 /* ------------------------------------------------------------------- state */
 
 const state = {
@@ -174,8 +228,10 @@ function renderFacets() {
     const details = document.createElement("details");
     details.className = "facet";
     details.open = facet.open || sel.size > 0;
+    const optionHelp = OPTION_HELP[facet.key] || {};
     details.innerHTML = `
       <summary>${esc(facet.label)}
+        ${FACET_HELP[facet.key] ? infoIcon(FACET_HELP[facet.key]) : ""}
         ${sel.size ? `<span class="facet-active-count">${sel.size}</span>` : ""}
       </summary>
       <div class="facet-body">
@@ -184,7 +240,8 @@ function renderFacets() {
             value="${esc(state.facetSearch.get(facet.key) || "")}"
             aria-label="Search within ${esc(facet.label)}">` : ""}
         ${shown.map(([v, n]) => `
-          <label class="facet-option${n === 0 ? " zero" : ""}">
+          <label class="facet-option${n === 0 ? " zero" : ""}"${
+            optionHelp[v] ? ` data-tip="${esc(optionHelp[v])}"` : ""}>
             <input type="checkbox" value="${esc(v)}" ${sel.has(v) ? "checked" : ""}>
             <span>${esc(facet.key === "mode" ? MODE_LABELS[v] || v : v)}</span>
             <span class="n">${n}</span>
@@ -280,7 +337,11 @@ function rowHTML(r) {
         <dt>Annotations (${r.annotations.length}) —
           <a class="row-annotate" href="${esc(annotateURL(r))}">add yours ↗</a></dt>
         <dd><table class="ann-table">
-          <tr><th>Annotator</th><th>Mode</th><th>Branch :: category</th><th>Flags</th></tr>
+          <tr><th>Annotator</th>
+            <th>Mode ${infoIcon(FACET_HELP.mode)}</th>
+            <th>Branch :: category ${infoIcon(FACET_HELP.branches + " " + FACET_HELP.categories)}</th>
+            <th>Flags ${infoIcon("Which evaluation-protocol dimensions the paper covers. " +
+              FLAG_KEYS.map(k => k + ": " + FACET_HELP[k]).join(" "))}</th></tr>
           ${r.annotations.map(a => `<tr>
             <td>${esc(a.who)}</td>
             <td>${a.mode ? `<span class="mode mode-${esc(a.mode)}">${esc(a.mode)}</span>` : "—"}</td>
@@ -392,6 +453,16 @@ function init() {
       window.open(link.href, "_blank", "noopener");
     }
   });
+
+  // Info icons sit inside <summary> elements too — hovering/focusing shows
+  // the tooltip; clicking should not toggle the facet or row.
+  document.addEventListener("click", e => {
+    if (e.target.closest(".info")) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
+
   $("#clear-all").addEventListener("click", () => {
     state.search = "";
     $("#search").value = "";
@@ -400,8 +471,43 @@ function init() {
     render();
   });
 
+  initTooltip();
   readHash();
   render();
+}
+
+/* Single floating tooltip for every [data-tip] element (annotation guidance
+   from the coding manual). JS-positioned so it escapes the facet rail's
+   scroll clipping; shown on hover and on keyboard focus, clamped to the
+   viewport. */
+function initTooltip() {
+  const tip = document.createElement("div");
+  tip.className = "tooltip";
+  tip.hidden = true;
+  document.body.appendChild(tip);
+
+  function show(el) {
+    tip.textContent = el.dataset.tip;
+    tip.hidden = false;
+    const anchor = el.getBoundingClientRect();
+    const box = tip.getBoundingClientRect();
+    let left = Math.min(anchor.left, window.innerWidth - box.width - 10);
+    let top = anchor.bottom + 6;
+    if (top + box.height > window.innerHeight - 6) top = anchor.top - box.height - 6;
+    tip.style.left = Math.max(6, left) + "px";
+    tip.style.top = Math.max(6, top) + "px";
+  }
+  const hide = () => { tip.hidden = true; };
+
+  document.addEventListener("mouseover", e => {
+    const el = e.target.closest("[data-tip]");
+    el ? show(el) : hide();
+  });
+  document.addEventListener("focusin", e => {
+    const el = e.target.closest("[data-tip]");
+    el ? show(el) : hide();
+  });
+  document.addEventListener("scroll", hide, true);
 }
 
 document.addEventListener("DOMContentLoaded", init);

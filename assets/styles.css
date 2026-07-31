@@ -365,6 +365,44 @@ a { color: var(--accent); }
 .footer-fine { font-size: 0.8rem; color: var(--muted); }
 .footer-fine .mode { transform: translateY(-1px); }
 
+/* ---------------------------------------------------------------- tooltips
+   Annotation guidance from the coding manual, shown on hover or keyboard
+   focus. The ⓘ icon carries facet-level help; facet options carry their own
+   definition on the whole label row. */
+
+.info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.95rem;
+  height: 0.95rem;
+  border: 1px solid var(--muted);
+  border-radius: 50%;
+  font: italic 600 0.62rem/1 Georgia, serif;
+  color: var(--muted);
+  cursor: help;
+  vertical-align: 0.1rem;
+  flex: none;
+}
+.info:hover, .info:focus-visible { border-color: var(--accent); color: var(--accent); }
+
+/* The tooltip itself is a single JS-positioned floating element (see
+   app.js) — CSS ::after tooltips would be clipped by the facet rail's
+   scroll container. */
+.tooltip {
+  position: fixed;
+  z-index: 100;
+  max-width: min(340px, 80vw);
+  background: var(--ink);
+  color: #f2f4f1;
+  padding: 0.55rem 0.7rem;
+  border-radius: 3px;
+  font: 400 0.76rem/1.5 var(--sans);
+  box-shadow: 0 3px 14px rgba(20, 35, 45, 0.28);
+  pointer-events: none;
+}
+.ann-table th .info { margin-left: 0.15rem; }
+
 /* ------------------------------------------------------------------ mobile */
 
 @media (max-width: 760px) {
