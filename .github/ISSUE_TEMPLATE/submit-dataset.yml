@@ -64,11 +64,40 @@ body:
       label: Cultural regions covered
       description: Comma-separated (e.g. East Asia, Latin America, Global).
 
+  - type: markdown
+    attributes:
+      value: |
+        <details><summary>ℹ️ <b>How to annotate the branch :: category pairs</b> — click for definitions and examples</summary>
+
+        Pick the branch(es) the dataset's cultural target belongs to, then the fine-grained element(s) under it (after Liu et al.'s *elements of culture*). Select every pair that genuinely applies; don't force one.
+
+        **Ideational — mental culture (ideas, beliefs, values, knowledge):**
+        - **Knowledge** — facts / commonsense acquired by education or experience. *e.g. "hurricane" vs "typhoon" QA, culture-MMLU.*
+        - **Concepts** — culture-specific entities / units of meaning. *e.g. Diwali, Nowruz, schnitzel in QA or captioning.*
+        - **Norms and Morals** — rules governing behaviour and moral reasoning. *e.g. situational moral inference, norm banks.*
+        - **Artifacts** — products of culture: art, poetry, literature, song. *e.g. poetry MT, folk-tale emotion arcs.*
+        - **Values - general** — beliefs / desirable end-states guiding evaluation. *e.g. WVS / Hofstede value alignment.*
+        - **Values - bias** — culture-varying stereotypes / bias toward groups. *e.g. caste bias, beauty-stereotype benchmarks.*
+        - **Values - hate** — culture-varying perception of hatefulness. *e.g. multicultural hate-speech / offensive detection.*
+        - **Values - other perceptions** — culture-varying politeness / aesthetics / emotion / humor / irony. *e.g. cross-cultural humor.*
+
+        **Linguistic — language-form phenomena:**
+        - **Dialects** — regional / social variants of a language. *e.g. AAVE, Tunisian Arabic dialect ID or MT.*
+        - **Styles, Registers, Genres** — formality and situational / communicative variation. *e.g. formality classification, style transfer.*
+
+        **Social — interaction enacted between people:**
+        - **Context** — situational / historical / non-verbal "containers" of communication. *e.g. pragmatic inference.*
+        - **Communicative Goals** — the intention behind language use. *e.g. requests, apologies, persuasion, indirect refusal.*
+        - **Relationship** — connection / social roles between people. *e.g. honorific selection by elder-vs-younger relation.*
+        - **Demographics** — speaker attributes: age, gender, location, education, income, politics. *e.g. annotator-demographic-aware modeling.*
+
+        </details>
+
   - type: dropdown
     id: branch-categories
     attributes:
       label: "Branch :: category pairs"
-      description: Select every pair that applies.
+      description: Select every pair that applies (definitions and examples in the ℹ️ box above).
       multiple: true
       options:
         - "Ideational :: Knowledge"
@@ -114,11 +143,26 @@ body:
         - "Social :: Dialects"
         - "Social :: Styles, Registers, Genres"
 
+  - type: markdown
+    attributes:
+      value: |
+        <details><summary>ℹ️ <b>How to annotate the representational mode</b> — the translation-invariance test, with examples</summary>
+
+        Ask: **if a faithful translation of the item into another language were given, what happens to the gold answer?**
+
+        - **C (Cultural, language-independent)** — the answer still **holds** unchanged. The item tests culture-specific knowledge, values, or norms that do not depend on the language. *e.g. "Which dish is eaten at this festival?", value surveys.*
+        - **CL (Culture + language entangled)** — the answer **changes**: culture and language co-vary and cannot be separated. *e.g. politeness registers, honorifics, culturally-loaded idioms whose correct answer depends on the language.*
+        - **L (Linguistic form only)** — the answer is **void** / meaningless after translation. The item tests language, dialect, script, or style — not culture. *e.g. dialect identification, genre/style classification, code-mixing detection.*
+
+        **Tie-breaker (C vs CL):** would a person from the culture answering in English still get it right? Then **C**. If the language itself carries the cultural signal, then **CL**.
+
+        </details>
+
   - type: dropdown
     id: rep-mode
     attributes:
       label: Representational mode
-      description: "Apply the translation test: does a faithful translation leave the gold answer unchanged (C), changed (CL), or undefined (L)?"
+      description: "Apply the translation test (ℹ️ box above): does a faithful translation leave the gold answer unchanged (C), changed (CL), or undefined (L)?"
       options:
         - C — culture-isolating (answer survives translation)
         - CL — culture–language entangled (answer altered by translation)
@@ -130,6 +174,18 @@ body:
     attributes:
       label: Models evaluated in the paper (if any)
       description: Semicolon-separated (e.g. GPT-4; Llama-3-8B-Instruct; mBERT).
+
+  - type: markdown
+    attributes:
+      value: |
+        <details><summary>ℹ️ <b>How to annotate the protocol flags</b> — tick a box only if the paper's evaluation protocol covers it</summary>
+
+        - **Refusal** — tick if the protocol treats abstention / "I don't know" / refusal-to-answer as a valid or *measured* outcome (credits appropriate refusal, reports abstention rate). Leave unticked if only accuracy on a forced answer counts.
+        - **Agentic** — tick if the model is evaluated in an agentic / interactive / multi-step / tool-using / dialogue setting. Leave unticked for single-turn QA, classification, multiple-choice, or one-shot generation.
+        - **Safety** — tick if the benchmark measures a safety / harm / toxicity dimension (whether the model *produces or detects* culturally-situated harm). Leave unticked if only correctness/accuracy is measured.
+        - **Robustness** — tick if the evaluation tests stability under perturbation: paraphrase, back-translation, option-order shuffling, prompt-template variation. Leave unticked if the score comes from a single fixed prompt/format.
+
+        </details>
 
   - type: checkboxes
     id: protocol-flags
