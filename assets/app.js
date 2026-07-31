@@ -216,6 +216,10 @@ function renderFacets() {
       const order = ["C", "CL", "L", "uncoded"];
       options.sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]));
     }
+    // Selected values float to the top (stable sort keeps the order above
+    // within each group), so active filters are visible and easy to remove —
+    // and never hidden behind the "Show N more" cutoff.
+    options.sort((a, b) => sel.has(b[0]) - sel.has(a[0]));
 
     const q = (state.facetSearch.get(facet.key) || "").toLowerCase();
     if (q) options = options.filter(([v]) => v.toLowerCase().includes(q));
