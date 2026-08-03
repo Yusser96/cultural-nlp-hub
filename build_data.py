@@ -29,7 +29,7 @@ from pathlib import Path
 
 import pandas as pd
 
-SOURCE_CSV = Path("../Annotated_Data_Culture_Taxonomy_ENRICHED_curated.csv")
+SOURCE_CSV = Path("../Annotated_Data_Culture_Taxonomy_ENRICHED_curated_dedup269.csv")
 VALIDATION_XLSX = Path("../annotations_results/Cultural_NLP_Validation_185_annotated.xlsx")
 OUTPUT_JS = Path("data/datasets.js")
 

@@ -27,8 +27,9 @@ view can be exported as CSV.
 `data/datasets.js` is generated — never edit it by hand.
 
 1. Add or correct rows in the master CSV
-   (`Annotated_Data_Culture_Taxonomy_ENRICHED_curated.csv`; see `SOURCE_CSV` in
+   (`Annotated_Data_Culture_Taxonomy_ENRICHED_curated_dedup269.csv`; see `SOURCE_CSV` in
    `build_data.py` — adjust the path if you keep the CSV inside this repo).
+   Two duplicate rows were removed from the release on 2026-08-03; see `ERRATA.md`.
 2. Run `python3 build_data.py`.
 3. Commit the regenerated `data/datasets.js` and push; Pages redeploys
    automatically.
